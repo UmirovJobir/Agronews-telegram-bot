@@ -1,7 +1,7 @@
 from email import message
-from telegram.bot import Bot
 from telegram import Update, MessageEntity
 from telegram.ext import CallbackContext, MessageHandler, Updater, CommandHandler, ConversationHandler, Filters
+from datetime import date
 
 from backend import DB
 from buttons import buttons
@@ -22,6 +22,13 @@ text = """💬 Ўзингиз гувоҳи бўлган:\n
 
 
 def start(update:Update, context:CallbackContext):
+    # context.bot.send_photo(chat_id = update.effective_message.chat_id,
+    #                        photo = open('img/agro.jpg','rb'),
+    #                        caption = f'Телефон рақамингизни +9989** *** ** **\nшаклда юборинг, '
+    #                               f'ёки "📱 Рақам юбориш"\nтугмасини босинг:',
+    #                               reply_markup=button.t_button())
+    context.bot.send_photo(chat_id = update.effective_message.chat_id,
+                           photo = open('img/agro.jpg','rb'))
     update.message.reply_html(f'Телефон рақамингизни +9989** *** ** **\nшаклда юборинг, '
                                   f'ёки "📱 Рақам юбориш"\nтугмасини босинг:',
                                   reply_markup=button.t_button())
@@ -67,9 +74,16 @@ def forward(update:Update, context:CallbackContext):
         data.insert_post_db(text=update.message.text, user_id=user)
 
 
+def info(update:Update, context:CallbackContext):
+    context.bot.send_photo(chat_id = update.effective_message.chat_id,
+                           photo = open('img/diogramma.jpg','rb'),
+                           caption =  f"Barcha foydalanuvchilar soni: <b>{data.count_users()}</b>\n"
+                                      f"Bot ishga tushganiga <b>{(date.today() - date(2022, 9, 28)).days}</b> kun bo'ldi",
+                           parse_mode="HTML")
+
 
 updater = Updater("5794102410:AAFfM6IBWUbaMs0UyFXHcnyPPbxOQKEZ2Eo", use_context=True)
-
+updater.dispatcher.add_handler(CommandHandler('info', info))
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
     states={

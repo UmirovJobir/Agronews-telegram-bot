@@ -14,6 +14,12 @@ class DB:
                 b = b + 1
         return b
     
+    def count_users(self):
+        sql = "select count(chat_id) from app_user"
+        self.cur.execute(sql)
+        for i in self.cur:
+            return i[0]
+
     def select_user(self, chat_id):
         sql = f"select * from app_user where chat_id = {chat_id}"
         self.cur.execute(sql)

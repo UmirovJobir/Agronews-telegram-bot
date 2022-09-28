@@ -1,7 +1,6 @@
 from telegram import InlineKeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardMarkup,MessageEntity
 from telegram import Update,KeyboardButton
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
-from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
 from backend import DB
 data = DB()
 
