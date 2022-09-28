@@ -17,13 +17,11 @@ STATE_TEXT = 5
  
 
 def start(update: Update, context: CallbackContext):
-    data.__init__()
-    global name
-    context.bot.send_photo(chat_id = update.effective_message.chat_id, photo = open('img/agronews.jpg','rb'), caption = "AgroZamin‍")
-    name = update.effective_user.first_name
-    update.message.reply_html(f'Ассалому алайкум! Келинг, аввал хизмат кўрсатиш тилини танлаб олайлик.'
-                              f'\n\nЗдраствуйте! Давайте для начала выбераем язык обслуживаниия.  ',
-                              reply_markup=button.b_button())
+    context.bot.send_photo(chat_id = update.effective_message.chat_id, photo = open('img/agronews.jpg','rb'), 
+        caption = f'🇺🇿 Ассалому алайкум! Келинг, аввал хизмат \nкўрсатиш тилини танлаб олайлик.'
+                "\n-------------------\n"
+                f'🇷🇺 Здраствуйте! Давайте для начала выбераем\n язык обслуживаниия.', reply_markup=button.b_button())
+    
     return STATE_BEGIN
 
 def phone(update:Update, context:CallbackContext):
@@ -44,8 +42,9 @@ def phone(update:Update, context:CallbackContext):
     return STATE_PHONE
  
 def resent_lang(update: Update, context: CallbackContext):
-    til = context.chat_data['til']
-    update.message.reply_html(f"{data.phone_text[f'{til}']}",reply_markup=button.b_button())
+    update.message.reply_html(f'Ассалому алайкум! Келинг, аввал хизмат кўрсатиш тилини танлаб олайлик.'
+                              f'\n\nЗдраствуйте! Давайте для начала выбераем язык обслуживаниия.  ',
+                              reply_markup=button.b_button())
 
 
 def phone_entity_handler(update: Update, context: CallbackContext):
@@ -77,6 +76,7 @@ def phone_resent_handler(update: Update, context: CallbackContext):
                                   reply_markup=btn)
 
 def forward(update:Update, context:CallbackContext):
+    til = context.chat_data['til']
     if update.message.text != '/start':
         msg = (f"👤 {update.effective_user.full_name}\n"
                 f"📲 {context.chat_data['phone_number']}\n"
@@ -88,11 +88,8 @@ def forward(update:Update, context:CallbackContext):
             from_chat_id=update.effective_chat.id, 
             message_id=update.message.message_id
         )        
-        update.message.reply_html(
-            "🤖  Ҳабарингиз мухбирга жўнатилди.\n\n✍️ Яна ҳабар юборишингиз мумкин ...\n"
-            "-------------------------------------------------------------------------------------\n"
-            "🤖Ваше сообщение отправлено корреспонденту.\n\n✍️ Вы можете отправить еще сообщение ..."
-        )
+        update.message.reply_html(f'{data.yana_habar_yuboring[f"{til}"]}')
+
         if data.chack_user(chat_id=update.message.chat_id):
             user = data.select_user(chat_id=update.message.chat_id)
         else:
@@ -104,24 +101,27 @@ def forward(update:Update, context:CallbackContext):
             )
             user = data.select_user(chat_id=update.message.chat_id)
         data.insert_post_db(text=update.message.text, user_id=user)
+    else:
+        update.message.reply_html(f'{data.yana_habar_yuboring[f"{til}"]}')
+
 
 
 def statistics(update:Update, context:CallbackContext):
     context.bot.send_photo(chat_id = update.effective_message.chat_id,
                            photo = open('img/diogramma.jpg','rb'),
-                           caption =  (f"Barcha foydalanuvchilar soni: <b>{data.count_users()}</b>\n"
-                                      f"Bot ishga tushganiga <b>{(date.today() - date(2022, 9, 28)).days}</b> kun bo'ldi\n"
-                                      f"-------------------------------------------------------------------------------------\n"
-                                      f"Общее количество пользователей: <b>{data.count_users()}</b>\n"
+                           caption =  (f"🇺🇿 Барча фойдаланувчилар сони: <b>{data.count_users()}</b>\n"
+                                      f"Бот ишга тушьганига <b>{(date.today() - date(2022, 9, 28)).days}</b> кун бўлди.\n"
+                                      f"-----------------------------\n"
+                                      f"🇷🇺 Общее количество пользователей: <b>{data.count_users()}</b>\n"
                                       f"Дней работы бота: <b>{(date.today() - date(2022, 9, 28)).days}</b>"),
                            parse_mode="HTML")
 
 def help(update:Update, context:CallbackContext):
     update.message.reply_html("🇺🇿 Ушбу Telegram бот agrozamin.uz билан боғланишингиз,"
-                                    f"расм, видео ҳамда аудиоёзувларни «Agrozamin мухбири» га юборишингиз учун яратилди.\n{uz_text}\n"
-                                    "-------------------------------------------------------------------------------------\n"
+                                    f"расм, видео ҳамда аудиоёзувларни «Agrozamin мухбири» га юборишингиз учун яратилди.\n\n{data.text_message['uz']}\n\n"
+                                    "------------------------------\n\n"
                                 "🇷🇺 Этот Telegram-бот создан для того, чтобы вы могли"
-                                    f"связаться с agrozamin.uz, ​​отправить фото, видео и аудиозаписи «Корреспонденту Агрозамин».\n{ru_text}")
+                                    f"связаться с agrozamin.uz, ​​отправить фото, видео и аудиозаписи «Корреспонденту Агрозамин».\n\n{data.text_message['ru']}")
 
 
 updater = Updater("5794102410:AAFfM6IBWUbaMs0UyFXHcnyPPbxOQKEZ2Eo", use_context=True)
